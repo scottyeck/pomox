@@ -47,6 +47,16 @@ Should work automatically. If not, check System Settings → Notifications → t
 3. Install to workspace and copy the `xoxp-...` token
 4. Add to config (see below)
 
+### Raycast
+
+Script commands are included in `raycast/`. To add:
+
+1. Raycast → Settings → Extensions → Script Commands
+2. Click "Add Directories"
+3. Select the `raycast` folder from this repo
+
+Note: These scripts assume nvm. YMMV.
+
 ## Config
 
 Edit `~/.pomox/config.json`:
