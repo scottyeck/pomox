@@ -11,6 +11,28 @@ pomox end                 # End early
 pomox setup               # Setup instructions
 ```
 
+## Setup
+
+### Focus Mode
+
+Create two shortcuts in the macOS Shortcuts app:
+
+1. `PomoxEnableFocus` - Add action: Set Focus → Do Not Disturb → Turn On
+2. `PomoxDisableFocus` - Add action: Set Focus → Do Not Disturb → Turn Off
+
+Or set `"focusMode": false` in config to disable.
+
+### Notifications
+
+Should work automatically. If not, check System Settings → Notifications → terminal-notifier is allowed.
+
+### Slack
+
+1. Create app at https://api.slack.com/apps
+2. Add User Token Scopes: `users.profile:write`, `users:write`
+3. Install to workspace and copy the `xoxp-...` token
+4. Add to config (see below)
+
 ## Config
 
 Edit `~/.pomox/config.json`:
