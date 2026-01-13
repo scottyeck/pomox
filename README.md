@@ -20,6 +20,7 @@ When the timer ends, everything is restored automatically.
 
 ```bash
 pomox start [-d minutes]  # Start timer (default 25)
+pomox fm                  # Start timer synced to active Focusmate session
 pomox status              # Check remaining time
 pomox end                 # End early
 pomox setup               # Setup instructions
@@ -46,6 +47,15 @@ Should work automatically. If not, check System Settings → Notifications → t
 2. Add User Token Scopes: `users.profile:write`, `users:write`
 3. Install to workspace and copy the `xoxp-...` token
 4. Add to config (see below)
+
+### Focusmate
+
+Sync your pomox timer with your active [Focusmate](https://www.focusmate.com) session. The timer will automatically match the remaining time in your session.
+
+1. Go to [Focusmate Settings](https://www.focusmate.com/profile/edit-p)
+2. Scroll to **Account** and click **Generate API key**
+3. Copy the key and add to config (see below)
+4. Run `pomox fm` during an active Focusmate session
 
 ### Raycast
 
@@ -75,6 +85,9 @@ Edit `~/.pomox/config.json`:
       "workspaces": [
         { "name": "work", "token": "xoxp-...", "statusEmoji": ":tomato:", "statusText": "Focusing" }
       ]
+    },
+    "focusmate": {
+      "apiKey": "your-api-key"
     }
   }
 }
