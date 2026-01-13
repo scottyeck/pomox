@@ -69,20 +69,20 @@ describe('focus-mode integration', () => {
   describe('checkShortcutsInstalled', () => {
     it('returns true when both shortcuts exist', () => {
       vi.mocked(execSync).mockReturnValue(
-        'PomoxEnableFocus\nPomoxDisableFocus\nOtherShortcut' as unknown as Buffer
+        'PomoxEnableFocus\nPomoxDisableFocus\nOtherShortcut'
       );
 
       expect(checkShortcutsInstalled()).toBe(true);
     });
 
     it('returns false when enable shortcut is missing', () => {
-      vi.mocked(execSync).mockReturnValue('PomoxDisableFocus\nOtherShortcut' as unknown as Buffer);
+      vi.mocked(execSync).mockReturnValue('PomoxDisableFocus\nOtherShortcut');
 
       expect(checkShortcutsInstalled()).toBe(false);
     });
 
     it('returns false when disable shortcut is missing', () => {
-      vi.mocked(execSync).mockReturnValue('PomoxEnableFocus\nOtherShortcut' as unknown as Buffer);
+      vi.mocked(execSync).mockReturnValue('PomoxEnableFocus\nOtherShortcut');
 
       expect(checkShortcutsInstalled()).toBe(false);
     });
