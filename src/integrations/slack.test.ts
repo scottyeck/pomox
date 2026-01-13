@@ -1,10 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-  setSlackStatus,
-  setSlackPresence,
-  setFocusStatus,
-  clearStatus,
-} from './slack.js';
+import { setSlackStatus, setSlackPresence, setFocusStatus, clearStatus } from './slack.js';
 import type { SlackWorkspace } from '../config.js';
 
 describe('slack integration', () => {
@@ -32,22 +27,19 @@ describe('slack integration', () => {
 
       await setSlackStatus(mockWorkspace, ':coffee:', 'Break time');
 
-      expect(fetch).toHaveBeenCalledWith(
-        'https://slack.com/api/users.profile.set',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer xoxp-test-token',
+      expect(fetch).toHaveBeenCalledWith('https://slack.com/api/users.profile.set', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer xoxp-test-token',
+        },
+        body: JSON.stringify({
+          profile: {
+            status_emoji: ':coffee:',
+            status_text: 'Break time',
           },
-          body: JSON.stringify({
-            profile: {
-              status_emoji: ':coffee:',
-              status_text: 'Break time',
-            },
-          }),
-        }
-      );
+        }),
+      });
     });
 
     it('handles API errors gracefully', async () => {

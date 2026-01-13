@@ -12,7 +12,9 @@
     "dev": "tsx src/cli.ts",
     "start": "node dist/cli.js",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "keywords": [
     "pomodoro",
@@ -30,6 +32,7 @@
   "devDependencies": {
     "@types/node": "^25.0.3",
     "@types/node-notifier": "^8.0.5",
+    "prettier": "^3.7.4",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.17"

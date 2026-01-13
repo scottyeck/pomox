@@ -1,10 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-  getEmptyState,
-  getRemainingTime,
-  formatRemainingTime,
-  type TimerState,
-} from './state.js';
+import { getEmptyState, getRemainingTime, formatRemainingTime, type TimerState } from './state.js';
 
 describe('state', () => {
   describe('getEmptyState', () => {

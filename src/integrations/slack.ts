@@ -29,7 +29,10 @@ export async function setSlackStatus(
   }
 }
 
-export async function setSlackPresence(workspace: SlackWorkspace, presence: 'away' | 'auto'): Promise<void> {
+export async function setSlackPresence(
+  workspace: SlackWorkspace,
+  presence: 'away' | 'auto'
+): Promise<void> {
   try {
     const response = await fetch('https://slack.com/api/users.setPresence', {
       method: 'POST',

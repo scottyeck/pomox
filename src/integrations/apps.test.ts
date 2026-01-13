@@ -20,14 +20,12 @@ describe('apps integration', () => {
       killApps(['Slack', 'Messages']);
 
       expect(execSync).toHaveBeenCalledTimes(2);
-      expect(execSync).toHaveBeenCalledWith(
-        'pkill -9 -f "Contents/MacOS/Slack$"',
-        { stdio: 'ignore' }
-      );
-      expect(execSync).toHaveBeenCalledWith(
-        'pkill -9 -f "Contents/MacOS/Messages$"',
-        { stdio: 'ignore' }
-      );
+      expect(execSync).toHaveBeenCalledWith('pkill -9 -f "Contents/MacOS/Slack$"', {
+        stdio: 'ignore',
+      });
+      expect(execSync).toHaveBeenCalledWith('pkill -9 -f "Contents/MacOS/Messages$"', {
+        stdio: 'ignore',
+      });
     });
 
     it('handles empty app list', () => {

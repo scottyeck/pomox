@@ -4,7 +4,13 @@ import { Command } from 'commander';
 import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { loadConfig, saveConfig, getDefaultConfig, getConfigPath, ensurePomoxDir } from './config.js';
+import {
+  loadConfig,
+  saveConfig,
+  getDefaultConfig,
+  getConfigPath,
+  ensurePomoxDir,
+} from './config.js';
 import {
   loadState,
   saveState,
@@ -124,9 +130,8 @@ program
     }
 
     // Import and run end hooks directly
-    const { disableFocusMode, notifyEnd, openApps, clearStatus } = await import(
-      './integrations/index.js'
-    );
+    const { disableFocusMode, notifyEnd, openApps, clearStatus } =
+      await import('./integrations/index.js');
     const config = loadConfig();
     const { integrations } = config;
 
@@ -166,10 +171,18 @@ program
 
     if (!shortcutsInstalled) {
       console.log('Focus Mode shortcuts not found.');
-      console.log('\nTo enable Focus Mode integration, create two shortcuts in the Shortcuts app:\n');
-      console.log(`  1. "${shortcutNames.enable}" - Add action: "Set Focus" -> "Do Not Disturb" -> "Turn On"`);
-      console.log(`  2. "${shortcutNames.disable}" - Add action: "Set Focus" -> "Do Not Disturb" -> "Turn Off"`);
-      console.log('\nAlternatively, set "focusMode": false in your config to disable this integration.\n');
+      console.log(
+        '\nTo enable Focus Mode integration, create two shortcuts in the Shortcuts app:\n'
+      );
+      console.log(
+        `  1. "${shortcutNames.enable}" - Add action: "Set Focus" -> "Do Not Disturb" -> "Turn On"`
+      );
+      console.log(
+        `  2. "${shortcutNames.disable}" - Add action: "Set Focus" -> "Do Not Disturb" -> "Turn Off"`
+      );
+      console.log(
+        '\nAlternatively, set "focusMode": false in your config to disable this integration.\n'
+      );
     } else {
       console.log('Focus Mode shortcuts found.\n');
     }

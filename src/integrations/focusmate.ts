@@ -36,11 +36,7 @@ export class FocusmateError extends Error {
   }
 }
 
-async function fetchSessions(
-  apiKey: string,
-  start: Date,
-  end: Date
-): Promise<FocusmateSession[]> {
+async function fetchSessions(apiKey: string, start: Date, end: Date): Promise<FocusmateSession[]> {
   const url = new URL(`${FOCUSMATE_API_BASE}/sessions`);
   url.searchParams.set('start', start.toISOString());
   url.searchParams.set('end', end.toISOString());
