@@ -5,8 +5,9 @@ A pomodoro timer for macOS that manages distractions for me.
 ## Why?
 
 - I get distracted by notifications in several applications.
-- I want notifications to be disabled in these applications.
-- I do not want to have to manually re-enable these notifications. (Ideally I am so focused that I will forget to do so.)
+- ...or sometimes just even by the _existence_ of these applications.
+- I want these applications to be quit and for their notifications to be disabled.
+- I do not want to have to manually re-open these applications or re-enable their notifications. (Ideally I am so focused that I will forget to do so.)
 
 I run `pomox` and a timer starts and side effects fire that:
 
