@@ -201,4 +201,75 @@ program
     console.log(JSON.stringify(config, null, 2));
   });
 
+program
+  .command('fm')
+  .description('Start a pomodoro synced with your active Focusmate session')
+  .action(async () => {
+    const state = loadState();
+
+    if (state.active) {
+      const remaining = getRemainingTime(state);
+      if (remaining) {
+        console.log(`Pomodoro already active - ${formatRemainingTime(remaining)} remaining`);
+        console.log('Run "pomox end" to end early.');
+      }
+      process.exit(1);
+    }
+
+    const config = loadConfig();
+
+    // Get active Focusmate session
+    const { getActiveSession, FocusmateError } = await import('./integrations/focusmate.js');
+
+    let activeSession;
+    try {
+      activeSession = await getActiveSession(config.integrations.focusmate);
+    } catch (error) {
+      if (error instanceof FocusmateError) {
+        console.error(error.message);
+      } else {
+        console.error('Failed to fetch Focusmate session:', error);
+      }
+      process.exit(1);
+    }
+
+    // Calculate duration in minutes (rounded up)
+    const durationMinutes = Math.ceil(activeSession.remainingMs / 60000);
+
+    if (durationMinutes <= 0) {
+      console.error('Focusmate session has ended');
+      process.exit(1);
+    }
+
+    const now = new Date();
+    const endTime = new Date(now.getTime() + durationMinutes * 60 * 1000);
+
+    // Save state before spawning daemon
+    const newState = {
+      active: true,
+      startTime: now.toISOString(),
+      duration: durationMinutes,
+      endTime: endTime.toISOString(),
+      daemonPid: null as number | null,
+    };
+    saveState(newState);
+
+    // Spawn detached daemon process
+    const daemonPath = join(__dirname, 'daemon.js');
+    const child = spawn(process.execPath, [daemonPath, durationMinutes.toString()], {
+      detached: true,
+      stdio: 'ignore',
+    });
+
+    child.unref();
+
+    if (child.pid) {
+      saveDaemonPid(child.pid);
+      newState.daemonPid = child.pid;
+      saveState(newState);
+    }
+
+    console.log(`Focusmate session synced (${durationMinutes} minutes remaining)`);
+  });
+
 program.parse();

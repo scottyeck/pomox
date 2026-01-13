@@ -12,11 +12,17 @@
     "dev": "tsx src/cli.ts",
     "start": "node dist/cli.js"
   },
-  "keywords": ["pomodoro", "timer", "focus", "productivity"],
+  "keywords": [
+    "pomodoro",
+    "timer",
+    "focus",
+    "productivity"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "commander": "^14.0.2",
+    "deepmerge": "^4.3.1",
     "node-notifier": "^10.0.1"
   },
   "devDependencies": {

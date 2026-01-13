@@ -1,12 +1,17 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { homedir } from 'os';
 import { join } from 'path';
+import deepmerge from 'deepmerge';
 
 export interface SlackWorkspace {
   name: string;
   token: string;
   statusEmoji: string;
   statusText: string;
+}
+
+export interface FocusmateConfig {
+  apiKey: string;
 }
 
 export interface Config {
@@ -21,6 +26,7 @@ export interface Config {
     slack: {
       workspaces: SlackWorkspace[];
     };
+    focusmate: FocusmateConfig;
   };
 }
 
@@ -39,6 +45,9 @@ export function getDefaultConfig(): Config {
       },
       slack: {
         workspaces: [],
+      },
+      focusmate: {
+        apiKey: '',
       },
     },
   };
@@ -59,9 +68,8 @@ export function loadConfig(): Config {
 
   try {
     const content = readFileSync(CONFIG_FILE, 'utf-8');
-    const config = JSON.parse(content) as Partial<Config>;
-    // Merge with defaults to handle missing fields
-    return { ...getDefaultConfig(), ...config };
+    const userConfig = JSON.parse(content) as Partial<Config>;
+    return deepmerge(getDefaultConfig(), userConfig) as Config;
   } catch {
     return getDefaultConfig();
   }
