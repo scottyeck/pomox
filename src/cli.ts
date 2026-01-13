@@ -50,16 +50,17 @@ program
     }
 
     const config = loadConfig();
-    const duration = parseInt(options.duration, 10) || config.duration;
+    const durationMinutes = parseInt(options.duration, 10) || config.duration;
+    const durationMs = durationMinutes * 60 * 1000;
 
     const now = new Date();
-    const endTime = new Date(now.getTime() + duration * 60 * 1000);
+    const endTime = new Date(now.getTime() + durationMs);
 
     // Save state before spawning daemon
     const newState = {
       active: true,
       startTime: now.toISOString(),
-      duration,
+      duration: durationMinutes,
       endTime: endTime.toISOString(),
       daemonPid: null as number | null,
     };
@@ -67,7 +68,7 @@ program
 
     // Spawn detached daemon process
     const daemonPath = join(__dirname, 'daemon.js');
-    const child = spawn(process.execPath, [daemonPath, duration.toString()], {
+    const child = spawn(process.execPath, [daemonPath, durationMs.toString()], {
       detached: true,
       stdio: 'ignore',
     });
@@ -80,7 +81,7 @@ program
       saveState(newState);
     }
 
-    console.log(`Pomodoro started (${duration} minutes)`);
+    console.log(`Pomodoro started (${durationMinutes} minutes)`);
   });
 
 program
@@ -246,16 +247,16 @@ program
       process.exit(1);
     }
 
-    // Calculate duration in minutes (rounded up)
-    const durationMinutes = Math.ceil(activeSession.remainingMs / 60000);
+    // Use exact end time from Focusmate session
+    const { endTime, remainingMs } = activeSession;
 
-    if (durationMinutes <= 0) {
+    if (remainingMs <= 0) {
       console.error('Focusmate session has ended');
       process.exit(1);
     }
 
     const now = new Date();
-    const endTime = new Date(now.getTime() + durationMinutes * 60 * 1000);
+    const durationMinutes = Math.ceil(remainingMs / 60000); // For display purposes
 
     // Save state before spawning daemon
     const newState = {
@@ -267,9 +268,9 @@ program
     };
     saveState(newState);
 
-    // Spawn detached daemon process
+    // Spawn detached daemon process with precise milliseconds
     const daemonPath = join(__dirname, 'daemon.js');
-    const child = spawn(process.execPath, [daemonPath, durationMinutes.toString()], {
+    const child = spawn(process.execPath, [daemonPath, remainingMs.toString()], {
       detached: true,
       stdio: 'ignore',
     });
