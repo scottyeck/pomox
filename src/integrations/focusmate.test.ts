@@ -164,6 +164,103 @@ describe('focusmate integration', () => {
       expect(result.remainingMs).toBe(1200000);
     });
 
+    it('returns upcoming session starting within 5 minutes', async () => {
+      const now = new Date('2024-01-15T09:57:00Z'); // 3 minutes before session
+      vi.setSystemTime(now);
+
+      const sessionStart = '2024-01-15T10:00:00Z';
+      const sessionDuration = 1500000; // 25 minutes
+
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              sessions: [
+                {
+                  sessionId: 'upcoming-session',
+                  duration: sessionDuration,
+                  startTime: sessionStart,
+                  users: [{ userId: 'user-1', completed: false }],
+                },
+              ],
+            }),
+        })
+      );
+
+      const result = await getActiveSession({ apiKey: 'valid-key' });
+
+      expect(result.sessionId).toBe('upcoming-session');
+      expect(result.duration).toBe(sessionDuration);
+      expect(result.startTime).toEqual(new Date(sessionStart));
+      expect(result.endTime).toEqual(new Date('2024-01-15T10:25:00Z'));
+      // 28 minutes remaining (10:25 - 9:57 = 28 min = 1680000ms)
+      expect(result.remainingMs).toBe(1680000);
+    });
+
+    it('throws error when session is more than 5 minutes away', async () => {
+      const now = new Date('2024-01-15T09:50:00Z'); // 10 minutes before session
+      vi.setSystemTime(now);
+
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              sessions: [
+                {
+                  sessionId: 'future-session',
+                  duration: 1500000, // 25 minutes
+                  startTime: '2024-01-15T10:00:00Z', // starts in 10 minutes
+                  users: [{ userId: 'user-1', completed: false }],
+                },
+              ],
+            }),
+        })
+      );
+
+      await expect(getActiveSession({ apiKey: 'valid-key' })).rejects.toThrow(
+        'No active Focusmate session found'
+      );
+    });
+
+    it('prefers active session over upcoming session within 5 minutes', async () => {
+      const now = new Date('2024-01-15T10:23:00Z'); // 2 min before session ends, 7 min before next starts
+      vi.setSystemTime(now);
+
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              sessions: [
+                {
+                  sessionId: 'active-session',
+                  duration: 1500000, // 25 minutes
+                  startTime: '2024-01-15T10:00:00Z', // ends at 10:25
+                  users: [{ userId: 'user-1', completed: false }],
+                },
+                {
+                  sessionId: 'upcoming-session',
+                  duration: 1500000, // 25 minutes
+                  startTime: '2024-01-15T10:25:00Z', // starts in 2 minutes (within 5 min)
+                  users: [{ userId: 'user-1', completed: false }],
+                },
+              ],
+            }),
+        })
+      );
+
+      const result = await getActiveSession({ apiKey: 'valid-key' });
+
+      expect(result.sessionId).toBe('active-session');
+      // 2 minutes remaining (10:25 - 10:23 = 2 min = 120000ms)
+      expect(result.remainingMs).toBe(120000);
+    });
+
     it('calls API with correct parameters', async () => {
       const now = new Date('2024-01-15T10:00:00Z');
       vi.setSystemTime(now);

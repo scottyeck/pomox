@@ -67,6 +67,7 @@ export async function getActiveSession(config: FocusmateConfig): Promise<ActiveS
   }
 
   const now = new Date();
+  const fiveMinutesFromNow = new Date(now.getTime() + 5 * 60 * 1000);
 
   // Fetch sessions from 2 hours ago to 2 hours from now to catch active sessions
   const start = new Date(now.getTime() - 2 * 60 * 60 * 1000);
@@ -74,12 +75,30 @@ export async function getActiveSession(config: FocusmateConfig): Promise<ActiveS
 
   const sessions = await fetchSessions(config.apiKey, start, end);
 
-  // Find session where now is between startTime and startTime + duration
+  // First, look for a currently active session
   for (const session of sessions) {
     const startTime = new Date(session.startTime);
     const endTime = new Date(startTime.getTime() + session.duration);
 
     if (now >= startTime && now < endTime) {
+      const remainingMs = endTime.getTime() - now.getTime();
+
+      return {
+        sessionId: session.sessionId,
+        duration: session.duration,
+        startTime,
+        endTime,
+        remainingMs,
+      };
+    }
+  }
+
+  // If no active session, look for an upcoming session starting within 5 minutes
+  for (const session of sessions) {
+    const startTime = new Date(session.startTime);
+    const endTime = new Date(startTime.getTime() + session.duration);
+
+    if (startTime > now && startTime <= fiveMinutesFromNow) {
       const remainingMs = endTime.getTime() - now.getTime();
 
       return {
