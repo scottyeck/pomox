@@ -27,6 +27,10 @@ export interface Config {
       workspaces: SlackWorkspace[];
     };
     focusmate: FocusmateConfig;
+    commands: {
+      onStart: string[];
+      onEnd: string[];
+    };
   };
 }
 
@@ -48,6 +52,10 @@ export function getDefaultConfig(): Config {
       },
       focusmate: {
         apiKey: '',
+      },
+      commands: {
+        onStart: [],
+        onEnd: [],
       },
     },
   };

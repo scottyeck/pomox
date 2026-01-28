@@ -16,6 +16,8 @@ import {
   openApps,
   setFocusStatus,
   clearStatus,
+  runStartCommands,
+  runEndCommands,
 } from './integrations/index.js';
 
 export async function runStartHooks(durationMinutes: number): Promise<void> {
@@ -41,6 +43,11 @@ export async function runStartHooks(durationMinutes: number): Promise<void> {
   if (integrations.slack.workspaces.length > 0) {
     await setFocusStatus(integrations.slack.workspaces);
   }
+
+  // Run custom start commands
+  if (integrations.commands.onStart.length > 0) {
+    runStartCommands(integrations.commands.onStart);
+  }
 }
 
 export async function runEndHooks(): Promise<void> {
@@ -60,6 +67,11 @@ export async function runEndHooks(): Promise<void> {
   // Clear Slack status
   if (integrations.slack.workspaces.length > 0) {
     await clearStatus(integrations.slack.workspaces);
+  }
+
+  // Run custom end commands
+  if (integrations.commands.onEnd.length > 0) {
+    runEndCommands(integrations.commands.onEnd);
   }
 
   // Send notification last

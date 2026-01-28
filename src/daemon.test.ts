@@ -24,6 +24,8 @@ vi.mock('./integrations/index.js', () => ({
   openApps: vi.fn(),
   setFocusStatus: vi.fn(),
   clearStatus: vi.fn(),
+  runStartCommands: vi.fn(),
+  runEndCommands: vi.fn(),
 }));
 
 import { loadConfig } from './config.js';
@@ -37,6 +39,8 @@ import {
   openApps,
   setFocusStatus,
   clearStatus,
+  runStartCommands,
+  runEndCommands,
 } from './integrations/index.js';
 
 describe('daemon', () => {
@@ -100,6 +104,7 @@ describe('daemon', () => {
             workspaces: [{ name: 'test', token: 'token', statusEmoji: ':tomato:', statusText: 'Focusing' }],
           },
           focusmate: { apiKey: '' },
+          commands: { onStart: ['echo "start"'], onEnd: [] },
         },
       });
 
@@ -109,6 +114,7 @@ describe('daemon', () => {
       expect(enableFocusMode).toHaveBeenCalled();
       expect(killApps).toHaveBeenCalledWith(['Slack', 'Messages']);
       expect(setFocusStatus).toHaveBeenCalled();
+      expect(runStartCommands).toHaveBeenCalledWith(['echo "start"']);
     });
 
     it('skips disabled integrations', async () => {
@@ -125,6 +131,7 @@ describe('daemon', () => {
             workspaces: [],
           },
           focusmate: { apiKey: '' },
+          commands: { onStart: [], onEnd: [] },
         },
       });
 
@@ -134,6 +141,7 @@ describe('daemon', () => {
       expect(enableFocusMode).not.toHaveBeenCalled();
       expect(killApps).not.toHaveBeenCalled();
       expect(setFocusStatus).not.toHaveBeenCalled();
+      expect(runStartCommands).not.toHaveBeenCalled();
     });
 
     it('passes duration to notification', async () => {
@@ -145,6 +153,7 @@ describe('daemon', () => {
           apps: { kill: [], reopen: [] },
           slack: { workspaces: [] },
           focusmate: { apiKey: '' },
+          commands: { onStart: [], onEnd: [] },
         },
       });
 
@@ -169,6 +178,7 @@ describe('daemon', () => {
             workspaces: [{ name: 'test', token: 'token', statusEmoji: ':tomato:', statusText: 'Focusing' }],
           },
           focusmate: { apiKey: '' },
+          commands: { onStart: [], onEnd: ['say "done"'] },
         },
       });
 
@@ -177,6 +187,7 @@ describe('daemon', () => {
       expect(disableFocusMode).toHaveBeenCalled();
       expect(openApps).toHaveBeenCalledWith(['Slack', 'Messages']);
       expect(clearStatus).toHaveBeenCalled();
+      expect(runEndCommands).toHaveBeenCalledWith(['say "done"']);
       expect(notifyEnd).toHaveBeenCalled();
       expect(clearState).toHaveBeenCalled();
       expect(clearDaemonPid).toHaveBeenCalled();
@@ -196,6 +207,7 @@ describe('daemon', () => {
             workspaces: [],
           },
           focusmate: { apiKey: '' },
+          commands: { onStart: [], onEnd: [] },
         },
       });
 
@@ -204,6 +216,7 @@ describe('daemon', () => {
       expect(disableFocusMode).not.toHaveBeenCalled();
       expect(openApps).not.toHaveBeenCalled();
       expect(clearStatus).not.toHaveBeenCalled();
+      expect(runEndCommands).not.toHaveBeenCalled();
       expect(notifyEnd).not.toHaveBeenCalled();
       // State should always be cleared
       expect(clearState).toHaveBeenCalled();
@@ -219,6 +232,7 @@ describe('daemon', () => {
           apps: { kill: [], reopen: [] },
           slack: { workspaces: [] },
           focusmate: { apiKey: '' },
+          commands: { onStart: [], onEnd: [] },
         },
       });
 
