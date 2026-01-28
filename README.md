@@ -58,6 +58,37 @@ Sync your pomox timer with your active [Focusmate](https://www.focusmate.com) se
 3. Copy the key and add to config (see below)
 4. Run `pomox fm` during an active Focusmate session
 
+### Custom Commands
+
+Run arbitrary shell commands when the timer starts and/or ends. Add to config:
+
+```json
+{
+  "integrations": {
+    "commands": {
+      "onStart": ["echo 'Focus time!' >> ~/pomodoro.log"],
+      "onEnd": ["say 'Pomodoro complete!'"]
+    }
+  }
+}
+```
+
+Both are optional. Commands run synchronously with a 30-second timeout.
+
+#### Focusmate Commands
+
+Consider using [`focusm`](https://github.com/scottyeck/focusm) to summon and unmute Focusmate when your session is complete.
+
+```json
+{
+  "integrations": {
+    "commands": {
+      "onEnd": ["focusm focus"]
+    }
+  }
+}
+```
+
 ### Raycast
 
 Script commands are included in `raycast/`. To add:
@@ -89,6 +120,10 @@ Edit `~/.pomox/config.json`:
     },
     "focusmate": {
       "apiKey": "your-api-key"
+    },
+    "commands": {
+      "onStart": [],
+      "onEnd": ["say 'Pomodoro complete!'"]
     }
   }
 }
